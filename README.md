@@ -4,7 +4,7 @@ This module contains the fundamental building blocks to implement
 the Introspective Variational Autoencoder (IntroVAE), introduced by
 [Huagn *et al* 2018](https://arxiv.org/abs/1807.06358)
 
-![IntroVAE_overview](./assets/network_overview.png)
+<img src="./assets/network_overview.png" height=100">
 
 Since the main contribution of IntroVAEs is the training regime, the
 methodology can be applied to any variational network. Therefore, included here are style-based 
@@ -15,7 +15,8 @@ adversarial training.
 
 This implementation borrowed the hairy loss implementation from `bbeatrix` available on 
 [GitHub](https://github.com/bbeatrix/introvae). The Adaptive Instance Normalisation
-Layer was borrowed from `manicman1999` available on [here](https://github.com/manicman1999/StyleGAN-Keras). Additionally,
-the [Nvidia Labs GitHub](https://github.com/NVlabs/stylegan2/) served as some interesting reading.
+Layer was borrowed from `manicman1999` available [here](https://github.com/manicman1999/StyleGAN-Keras). Additionally,
+the [Nvidia Labs GitHub](https://github.com/NVlabs/stylegan2/) served as some interesting and helpful reading.
+
 
 
