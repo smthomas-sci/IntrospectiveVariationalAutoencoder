@@ -4,7 +4,7 @@ This module contains the fundamental building blocks to implement
 the Introspective Variational Autoencoder (IntroVAE), introduced by
 [Huagn *et al* 2018](https://arxiv.org/abs/1807.06358)
 
-<img src="./assets/network_overview.png" height=100">
+![IntroVAE_overview](./assets/network_overview.png)
 
 Since the main contribution of IntroVAEs is the training regime, the
 methodology can be applied to any variational network. Therefore, included here are style-based 
