@@ -27,13 +27,14 @@ class DataGen:
 
     """
 
-    def __init__(self, img_dir, img_dim, batch_size, pixel=False, alpha=-1, sigma=False, shuffle=True):
+    def __init__(self, img_dir, img_dim, batch_size, pixel=False, alpha=-1, sigma=False, shuffle=True, style=False):
         self.img_dir = img_dir
         self.img_dim = img_dim
         self.batch_size = batch_size
         self.pixel = pixel
         self.alpha = alpha
         self.sigma = sigma
+        self.style = style
         self.files = np.array([os.path.join(self.img_dir, file) for file in os.listdir(self.img_dir)])
         self.n = len(self.files)
         self.indices = np.arange(0, self.n)
@@ -72,6 +73,9 @@ class DataGen:
                     img = img_big
 
             batch.append(img)
+
+        if self.style:
+            return (np.stack(batch), np.random.normal(0, 1, (self.batch_size, self.img_dim, self.img_dim, 1))), np.stack(batch)
 
         return np.stack(batch), np.stack(batch)
 

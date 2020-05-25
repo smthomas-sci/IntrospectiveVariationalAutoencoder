@@ -9,7 +9,7 @@ import numpy as np
 import keras.backend as K
 from keras.layers import Lambda, BatchNormalization, Add, LeakyReLU, Conv2D,\
                          UpSampling2D, Input, Flatten, Dense, Reshape, Layer, \
-                         Cropping2D
+                         Cropping2D, AveragePooling2D
 
 
 def tRGB(x, block):
@@ -209,69 +209,80 @@ def style_block(filters, input_tensor, style_tensor, noise_image, block_num):
     return x
 
 
+def BilinearDownSample(name):
+    return AveragePooling2D(name=name)
 
-class BilinearUpSample(Lambda):
-    """
-    Bilinear UpSamplling Layer.
-
-    Input:
-        name - the name of the layer
-        **kwargs - keyword arguments
-    """
-    def __init__(self, name='bilinear_upsample', **kwargs):
-        # Function
-        func = (Lambda(K.resize_images,
+def BilinearUpSample(name):
+    return Lambda(K.resize_images,
                       arguments={"height_factor": 2,
                                  "width_factor": 2,
                                  "data_format": "channels_last",
                                  "interpolation": "bilinear"
-                                }))
-        super(BilinearUpSample, self).__init__(func, name=name)
+                                }, name=name)
 
-    def get_config(self):
-        """Return the config of the layer."""
-        config = super(BilinearUpSample, self).get_config()
-        return config
-
-    @classmethod
-    def from_config(cls, config, custom_objects=None):
-        """Create a layer from its config."""
-        return cls(**config, custom_objects={'bilinear_upsample': BilinearUpSample})
-
-    def __repr__(self):
-        return f"<Keras CustomLayer - BiLinearUpSample - {self.name}>"
-
-class BilinearDownSample(Lambda):
-    """
-    Bilinear DownSamplling Layer.
-
-    Input:
-        name - the name of the layer
-        **kwargs - keyword arguments
-    """
-    def __init__(self, name='bilinear_downsample', **kwargs):
-        # Function
-        func = (Lambda(K.resize_images,
-                      arguments={"height_factor": 0.5,
-                                 "width_factor": 0.5,
-                                 "data_format": "channels_last",
-                                 "interpolation": "bilinear"
-                                }))
-        super(BilinearDownSample, self).__init__(func, name=name)
-
-    def get_config(self):
-        """Return the config of the layer."""
-        config = super(BilinearDownSample, self).get_config()
-        return config
-
-    @classmethod
-    def from_config(cls, config, custom_objects=None):
-        """Create a layer from its config."""
-        return cls(**config, custom_objects={'bilinear_downsample': BilinearDownSample})
-
-    def __repr__(self):
-        return f"<Keras CustomLayer - BiLinearDownSample - {self.name}>"
-
+# class BilinearUpSample(Lambda):
+#     """
+#     Bilinear UpSamplling Layer.
+#
+#     Input:
+#         name - the name of the layer
+#         **kwargs - keyword arguments
+#     """
+#     def __init__(self, name='bilinear_upsample', **kwargs):
+#         # Function
+#         func = (Lambda(K.resize_images,
+#                       arguments={"height_factor": 2,
+#                                  "width_factor": 2,
+#                                  "data_format": "channels_last",
+#                                  "interpolation": "bilinear"
+#                                 }))
+#         super(BilinearUpSample, self).__init__(func, name=name)
+#
+#     def get_config(self):
+#         """Return the config of the layer."""
+#         config = super(BilinearUpSample, self).get_config()
+#         return config
+#
+#     @classmethod
+#     def from_config(cls, config, custom_objects=None):
+#         """Create a layer from its config."""
+#         return cls(**config, custom_objects={'bilinear_upsample': BilinearUpSample})
+#
+#     def __repr__(self):
+#         return f"<Keras CustomLayer - BiLinearUpSample - {self.name}>"
+#
+#
+# class BilinearDownSample(Lambda):
+#     """
+#     Bilinear DownSamplling Layer.
+#
+#     Input:
+#         name - the name of the layer
+#         **kwargs - keyword arguments
+#     """
+#     def __init__(self, name='bilinear_downsample', **kwargs):
+#         # Function
+#         func = (Lambda(K.resize_images,
+#                       arguments={"height_factor": 0.5,
+#                                  "width_factor": 0.5,
+#                                  "data_format": "channels_last",
+#                                  "interpolation": "bilinear"
+#                                 }))
+#         super(BilinearDownSample, self).__init__(func, name=name)
+#
+#     def get_config(self):
+#         """Return the config of the layer."""
+#         config = super(BilinearDownSample, self).get_config()
+#         return config
+#
+#     @classmethod
+#     def from_config(cls, config, custom_objects=None):
+#         """Create a layer from its config."""
+#         return cls(**config, custom_objects={'bilinear_downsample': BilinearDownSample})
+#
+#     def __repr__(self):
+#         return f"<Keras CustomLayer - BiLinearDownSample - {self.name}>"
+#
 
 class AdaInstanceNormalization(Layer):
     """
