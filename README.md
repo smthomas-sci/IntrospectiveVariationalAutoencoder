@@ -22,13 +22,20 @@ the [Nvidia Labs GitHub](https://github.com/NVlabs/stylegan2/) served as some in
 # Demo
 
 <p align="center">
-    <img src="https://github.com/smthomas-sci/IntrospectiveVariationalAutoencoder/blob/master/assets/anime_loss.png" width="350">
-    <br>
-    <img src="https://github.com/smthomas-sci/IntrospectiveVariationalAutoencoder/blob/master/assets/anime_interp.png" width="350">
-    <br>
-    <img src="https://github.com/smthomas-sci/IntrospectiveVariationalAutoencoder/blob/master/assets/anime_sample.jpg" width="350">
-    <br>
-    <video width="320" height="240" controls src="https://github.com/smthomas-sci/IntrospectiveVariationalAutoencoder/blob/master/assets/anime_progress.mp4"></video>
+    <figure>
+        <img src="https://github.com/smthomas-sci/IntrospectiveVariationalAutoencoder/blob/master/assets/anime_loss.png" width="350">
+        <figcaption>Fig.1 - Training Progress.</figcaption>
+    </figure>
+
+    <figure>
+        <img src="https://github.com/smthomas-sci/IntrospectiveVariationalAutoencoder/blob/master/assets/anime_interp.png" width="350">
+        <figcaption>Fig.2 - Interpolations between real images</figcaption>
+    </figure>
+    
+    <figure>
+        <img src="https://github.com/smthomas-sci/IntrospectiveVariationalAutoencoder/blob/master/assets/anime_sample.jpg" width="350">
+        <figcaption>Fig.3 - Random Samples (mean = 0, std. = 1)</figcaption>
+    </figure>
 </p>
  
 
