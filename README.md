@@ -34,7 +34,7 @@ the [Nvidia Labs GitHub](https://github.com/NVlabs/stylegan2/) served as some in
     <br>
     <br>
     <br>
-    <img src="https://github.com/smthomas-sci/IntrospectiveVariationalAutoencoder/blob/master/assets/anime.gif" width="350">
+    <img src="https://github.com/smthomas-sci/IntrospectiveVariationalAutoencoder/blob/master/assets/anime.gif" width="128">
     <br>
     Fig.3 - Interpolations
     <br>
