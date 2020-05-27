@@ -15,15 +15,15 @@ import skimage.io as io
 
 
 # MODEL SETTINGS
-IMG_DIM = 64
-Z_DIM = 100
-FILTERS = [16, 32, 64, 128]
-BASE_DIM = (4, 4, 256)
+IMG_DIM = 128
+Z_DIM = 200
+FILTERS = [32, 64, 128, 256, 512]
+BASE_DIM = (4, 4, 512)
 N_LAYERS = len(FILTERS)
-N_MAPPING_LAYERS = 5
-BATCH_SIZE = 48
-IMG_DIR = "/home/simon/Documents/Programming/Data/progressive_growing_of_gans/celeba-hq/celeba-64"
-LEARNING_RATE = 0.0001
+N_MAPPING_LAYERS = 4
+BATCH_SIZE = 12
+IMG_DIR = "/home/simon/Documents/Programming/Data/HistoPatches/Training_128_2x"
+LEARNING_RATE = 0.0002
 
 
 # Data
@@ -35,8 +35,14 @@ gen = DataGen(IMG_DIR, IMG_DIM, BATCH_SIZE, style=True)
 tensors, encoder = build_encoder(IMG_DIM, Z_DIM, FILTERS, True)
 z, z_mean, z_log_var = tensors
 
-generator = build_style_generator(IMG_DIM, Z_DIM, FILTERS, BASE_DIM, N_MAPPING_LAYERS)
-#generator = build_generator(Z_DIM, FILTERS, BASE_DIM)
+#generator = build_style_generator(IMG_DIM, Z_DIM, FILTERS, BASE_DIM, N_MAPPING_LAYERS)
+generator = build_generator(Z_DIM, FILTERS, BASE_DIM)
+
+print("--------------------- ENCODER ---------------------")
+encoder.summary()
+
+print("--------------------- GENERATOR ---------------------")
+generator.summary()
 
 
 # Losses
@@ -53,20 +59,20 @@ def mse_loss(x, x_decoded):
 
 
 generator_input_z = generator.inputs[0]
-generator_input_noise = generator.inputs[1]
-generator_input_constant = generator.inputs[2]
+# generator_input_noise = generator.inputs[1]
+# generator_input_constant = generator.inputs[2]
 encoder_input = encoder.get_input_at(0)
 
 # feed_dict tensors
-xr = generator([z, generator_input_noise, generator_input_constant])
+xr = generator(z)
 reconst_latent_input = Input(batch_shape=(BATCH_SIZE, Z_DIM))
-_, zr_mean, zr_log_var = encoder(generator([reconst_latent_input, generator_input_noise, generator_input_constant]))
-_, zr_mean_ng, zr_log_var_ng = encoder(K.stop_gradient(generator([reconst_latent_input, generator_input_noise, generator_input_constant])))
-xr_latent = generator([reconst_latent_input, generator_input_noise, generator_input_constant])
+_, zr_mean, zr_log_var = encoder(generator(reconst_latent_input))
+_, zr_mean_ng, zr_log_var_ng = encoder(K.stop_gradient(generator(reconst_latent_input)))
+xr_latent = generator(reconst_latent_input)
 
 sampled_latent_input = Input(batch_shape=(BATCH_SIZE, Z_DIM), name='sampled_latent_input')
-_, zpp_mean, zpp_log_var = encoder(generator([sampled_latent_input, generator_input_noise, generator_input_constant]))
-_, zpp_mean_ng, zpp_log_var_ng = encoder(K.stop_gradient(generator([sampled_latent_input, generator_input_noise, generator_input_constant])))
+_, zpp_mean, zpp_log_var = encoder(generator(sampled_latent_input))
+_, zpp_mean_ng, zpp_log_var_ng = encoder(K.stop_gradient(generator(sampled_latent_input)))
 
 
 # KL
@@ -79,8 +85,8 @@ l_ae = mse_loss(encoder_input, xr)
 l_ae2 = mse_loss(encoder_input, xr_latent)
 
 ALPHA = 0.25
-BETA = 10
-M = 180
+BETA = 0.5
+M = 35
 
 
 # ENCODER LOSSES
@@ -115,11 +121,11 @@ session = K.get_session()
 init = tf.global_variables_initializer()
 session.run([init])
 
-generator.load_weights("./weights/generator_64x64_faces_residual_10.h5")
-encoder.load_weights("./weights/encoder_64x64_faces_residual_10.h5")
+generator.load_weights(f"./weights/generator_128x128_hist_residual_001.h5")
+encoder.load_weights(f"./weights/encoder_128x128_hist_residual_001.h5")
 
 
-epochs = 200
+epochs = 100
 
 losses = {
     "enc_loss_np": [],
@@ -137,7 +143,7 @@ losses = {
 # test data
 z_test = np.random.uniform(0, 1, (BATCH_SIZE, Z_DIM))
 
-for epoch in range(10, epochs):
+for epoch in range(2, epochs):
 
     iterations = gen.n // gen.batch_size
     for i in range(iterations):
@@ -148,7 +154,6 @@ for epoch in range(10, epochs):
         z_x, x_r, x_p = session.run([z, xr, generator.get_output_at(0)],
                                     feed_dict={encoder_input: x,
                                                generator_input_z: z_p,
-                                               generator_input_noise: noise
                                                })
 
         # Train encoder
@@ -156,14 +161,12 @@ for epoch in range(10, epochs):
                         feed_dict={encoder_input: x,
                                    reconst_latent_input: z_x,
                                    sampled_latent_input: z_p,
-                                   generator_input_noise: noise
                                    })
         # Train generator
         _ = session.run([generator_apply_grads_op],
                         feed_dict={encoder_input: x,
                                    reconst_latent_input: z_x,
                                    sampled_latent_input: z_p,
-                                   generator_input_noise: noise
                                    })
 
         if (i % 100) == 0:
@@ -182,7 +185,6 @@ for epoch in range(10, epochs):
                             feed_dict={encoder_input: X,
                                        reconst_latent_input: z_x,
                                        sampled_latent_input: z_p,
-                                       generator_input_noise: noise
                                        })
 
             print('Epoch: {}/{}, iteration: {}/{}'.format(epoch + 1, epochs, i + 1, iterations))
@@ -212,11 +214,11 @@ for epoch in range(10, epochs):
 
     # Reconstruction
     zs, _, _ = encoder.predict(x)
-    imgs = [img for img in generator.predict([zs, noise])][0:N_TO_SHOW]
+    imgs = [img for img in generator.predict(zs)][0:N_TO_SHOW]
     img2 = np.hstack(imgs)
 
     # Sample
-    imgs = [img for img in generator.predict([z_test, noise])][0:N_TO_SHOW]
+    imgs = [img for img in generator.predict(z_test)][0:N_TO_SHOW]
     img3 = np.hstack(imgs)
 
     canvas = np.vstack([img1, img2, img3])
@@ -235,6 +237,6 @@ for epoch in range(10, epochs):
 
     print("\n\n")
 
-    generator.save_weights(f"./weights/generator_64x64_faces_residual_{epoch:03d}.h5")
-    encoder.save_weights(f"./weights/encoder_64x64_faces_residual_{epoch:03d}.h5")
+    generator.save_weights(f"./weights/generator_128x128_hist_residual_{epoch:03d}.h5")
+    encoder.save_weights(f"./weights/encoder_128x128_hist_residual_{epoch:03d}.h5")
 

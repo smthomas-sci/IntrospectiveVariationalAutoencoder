@@ -19,4 +19,15 @@ Layer was borrowed from `manicman1999` available [here](https://github.com/manic
 the [Nvidia Labs GitHub](https://github.com/NVlabs/stylegan2/) served as some interesting and helpful reading.
 
 
+# Demo
 
+<p align="center">
+    <img src="https://github.com/smthomas-sci/IntrospectiveVariationalAutoencoder/blob/master/assets/network_overview.png" width="350">
+    <img src="https://github.com/smthomas-sci/IntrospectiveVariationalAutoencoder/blob/master/assets/network_overview.png" width="350">
+    
+    <video width="320" height="240" controls>
+        <source src="https://github.com/smthomas-sci/IntrospectiveVariationalAutoencoder/blob/master/assets/progress.mp4" type="video/mp4">
+    </video>
+    
+ </p>
+  
