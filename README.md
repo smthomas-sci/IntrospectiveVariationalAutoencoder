@@ -22,12 +22,14 @@ the [Nvidia Labs GitHub](https://github.com/NVlabs/stylegan2/) served as some in
 # Demo
 
 <p align="center">
-    <img src="https://github.com/smthomas-sci/IntrospectiveVariationalAutoencoder/blob/master/assets/network_overview.png" width="350">
-    <img src="https://github.com/smthomas-sci/IntrospectiveVariationalAutoencoder/blob/master/assets/network_overview.png" width="350">
-    
-    <video width="320" height="240" controls>
-        <source src="https://github.com/smthomas-sci/IntrospectiveVariationalAutoencoder/blob/master/assets/progress.mp4" type="video/mp4">
-    </video>
-    
+    <img src="https://github.com/smthomas-sci/IntrospectiveVariationalAutoencoder/blob/master/assets/anime_loss.png" width="350">
+    <br>
+    <img src="https://github.com/smthomas-sci/IntrospectiveVariationalAutoencoder/blob/master/assets/anime_interp.png" width="350">
+    <br>
+    <img src="https://github.com/smthomas-sci/IntrospectiveVariationalAutoencoder/blob/master/assets/anime_sample.png" width="350">
  </p>
+ 
+ <video width="320" height="240" controls>
+        <source src="https://github.com/smthomas-sci/IntrospectiveVariationalAutoencoder/blob/master/assets/anime_progress.mp4" type="video/mp4">
+ </video>
   
