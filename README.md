@@ -26,13 +26,19 @@ the [Nvidia Labs GitHub](https://github.com/NVlabs/stylegan2/) served as some in
     <br>
     Fig.1 - Training Progress.
     <br>
+    <br>
+    <br>
     <img src="https://github.com/smthomas-sci/IntrospectiveVariationalAutoencoder/blob/master/assets/anime_interp.png" width="350">
     <br>
     Fig.2 - Interpolations between real images
     <br>
+    <br>
+    <br>
     <img src="https://github.com/smthomas-sci/IntrospectiveVariationalAutoencoder/blob/master/assets/anime_sample.jpg" width="350">
     <br>
     Fig.3 - Random Samples (mean = 0, std. = 1)
+    <br>
+    <br>
     <br>
 </p>
  
