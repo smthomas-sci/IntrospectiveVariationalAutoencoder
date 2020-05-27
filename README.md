@@ -27,9 +27,9 @@ the [Nvidia Labs GitHub](https://github.com/NVlabs/stylegan2/) served as some in
     <img src="https://github.com/smthomas-sci/IntrospectiveVariationalAutoencoder/blob/master/assets/anime_interp.png" width="350">
     <br>
     <img src="https://github.com/smthomas-sci/IntrospectiveVariationalAutoencoder/blob/master/assets/anime_sample.jpg" width="350">
- </p>
+    <br>
+    <video width="320" height="240" controls src="https://github.com/smthomas-sci/IntrospectiveVariationalAutoencoder/blob/master/assets/anime_progress.mp4"></video>
+</p>
  
- <video width="320" height="240" controls>
-        <source src="https://github.com/smthomas-sci/IntrospectiveVariationalAutoencoder/blob/master/assets/anime_progress.mp4" type="video/mp4">
- </video>
+
   
