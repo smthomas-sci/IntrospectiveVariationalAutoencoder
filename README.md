@@ -19,7 +19,7 @@ Layer was borrowed from `manicman1999` available [here](https://github.com/manic
 the [Nvidia Labs GitHub](https://github.com/NVlabs/stylegan2/) served as some interesting and helpful reading.
 
 
-# Demo
+# Demo 64x64 Anime
 
 <p align="center">
     <figure>
