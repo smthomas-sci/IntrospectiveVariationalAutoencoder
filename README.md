@@ -46,7 +46,8 @@ the [Nvidia Labs GitHub](https://github.com/NVlabs/stylegan2/) served as some in
     <br>
     <br>
     <br>
-</p>
+
+A video of training progression of 500 epochs is available for download [here](./assets/anime_progress.mp4).
  
 
   

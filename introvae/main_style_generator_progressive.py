@@ -24,7 +24,7 @@ BASE_DIM = (4, 4, 128)
 N_LAYERS = len(FILTERS)
 N_MAPPING_LAYERS = 4
 BATCH_SIZE = 64
-IMG_DIR = "/home/simon/Documents/Programming/Data/HistoPatches/Training_256_labelled"
+IMG_DIR = "/home/simon/Documents/Programming/Data/progressive_growing_of_gans/celeba-hq/celeba-64/"
 LEARNING_RATE = 0.0002
 
 # Data
@@ -37,8 +37,8 @@ tensors, encoder = build_encoder(IMG_DIM, Z_DIM, FILTERS, True)
 z, z_mean, z_log_var = tensors
 
 generator = build_style_generator(IMG_DIM, Z_DIM, FILTERS, BASE_DIM, N_MAPPING_LAYERS)
+#generator = build_generator(Z_DIM, FILTERS, BASE_DIM)
 
-rgb_getter = build_rgb_from_generator(generator, n_blocks=N_LAYERS)
 
 # Losses
 from keras.objectives import mean_squared_error
@@ -82,7 +82,8 @@ l_ae2 = mse_loss(encoder_input, xr_latent)
 ALPHA = 0.25
 BETA = 0.1
 DELTA = 1
-M = 4.5
+M = 18
+
 
 # ENCODER LOSSES
 encoder_l_adv = DELTA*l_reg_z + ALPHA * K.maximum(0., M - l_reg_zr_ng) + ALPHA * K.maximum(0., M - l_reg_zpp_ng)
@@ -116,12 +117,11 @@ session = K.get_session()
 init = tf.global_variables_initializer()
 session.run([init])
 
-generator.load_weights("./weights/generator_64x64_histo_residual_399.h5")
-encoder.load_weights("./weights/encoder_64x64_histo_residual_399.h5")
+generator.load_weights("./weights/generator_64x64_face_residual_304.h5")
+encoder.load_weights("./weights/encoder_64x64_face_residual_304.h5")
 
 epochs = 500
 
-# MONITOR
 losses = {
     "enc_loss_np": [],
     "enc_l_ae_np": [],
@@ -133,16 +133,13 @@ losses = {
     "l_reg_zr_np": [],
     "l_reg_zpp_np": []
 }
-statistics = []
-rbg_labels = [f"{2**dim}x{2**dim}" for dim in range(2, 7)]
-
 
 
 # test data
 z_test = np.random.uniform(0, 1, (BATCH_SIZE, Z_DIM))
 
-initial_epoch = 400
-for epoch in range(initial_epoch, epochs):
+start = 305
+for epoch in range(start, epochs):
 
     iterations = gen.n // gen.batch_size
     for i in range(iterations):
@@ -240,33 +237,6 @@ for epoch in range(initial_epoch, epochs):
 
     print("\n\n")
 
-    # MEASURE BLOCK CONTRIBUTION
-    outputs = rgb_getter.predict([zs, noise])
-    # Get standard deviations for each block
-    stds = np.array([np.std(block) for block in outputs])
-
-    # Scale between 0 - 1
-    stds = np.expand_dims(stds / np.sum(stds), -1)
-
-    # Save
-    statistics.append(stds)
-
-    # Show progress
-    values = np.hstack(statistics)
-
-    blocks = [values[_, :] for _ in range(N_LAYERS+1)]
-
-    plt.stackplot(range(len(statistics)), *blocks, alpha=0.3, labels=rbg_labels)
-
-    plt.xlabel("Epochs")
-    plt.xlim(0, len(statistics)-1)
-    plt.ylim(0, 1)
-
-    plt.legend()
-    plt.savefig("./img_out/progress_std.png", dpi=100)
-    plt.close()
-
-    # SAVE WEIGHTS
-    generator.save_weights(f"./weights/generator_64x64_histo_residual_{epoch:03d}.h5")
-    encoder.save_weights(f"./weights/encoder_64x64_histo_residual_{epoch:03d}.h5")
+    generator.save_weights(f"./weights/generator_64x64_face_residual_{epoch:03d}.h5")
+    encoder.save_weights(f"./weights/encoder_64x64_face_residual_{epoch:03d}.h5")
 

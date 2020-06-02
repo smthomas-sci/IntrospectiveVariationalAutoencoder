@@ -61,16 +61,17 @@ def conv_block(x, filters, block, down=True, residual=True):
         x = Conv2D(filters, (3, 3), strides=(1, 1), padding="same", name=f"block_{block}_conv1")(x)
         x = BatchNormalization(name=f"block_{block}_BN_1")(x)
         x = LeakyReLU(0.2)(x)
+        # Conv 2
+        x = Conv2D(filters, (3, 3), strides=(1, 1), padding="same", name=f"block_{block}_conv2")(x)
+        x = BatchNormalization(name=f"block_{block}_BN_2")(x)
+        x = LeakyReLU(0.2)(x)
 
         if residual:
             x = Add(name=f"block_{block}_residual")([x, x_res])
             x = BatchNormalization(name=f"block_{block}_BN_3")(x)
             x = LeakyReLU(0.2)(x)
-
-        # Conv 2
-        x = Conv2D(filters, (3, 3), strides=(2, 2), padding="same", name=f"block_{block}_conv2")(x)
-        x = BatchNormalization(name=f"block_{block}_BN_2")(x)
-        x = LeakyReLU(0.2)(x)
+        # Pool
+        x = AveragePooling2D(name=f"block_{block}_pool")(x)
 
     else:
         # Upsample
@@ -186,7 +187,7 @@ def style_block(filters, input_tensor, style_tensor, noise_image, block_num):
     beta = Dense(filters, name="block_{0}_beta2".format(block_num))(style_tensor)
     beta = Reshape([1, 1, filters], name="block_{0}_beta2_reshape".format(block_num))(beta)
     gamma = Dense(filters, name="block_{0}_gamma2".format(block_num))(style_tensor)
-    gamma = Reshape([1, 1, filters], name="block_{0}_gamma2_reshape".format(block_num))(beta)
+    gamma = Reshape([1, 1, filters], name="block_{0}_gamma2_reshape".format(block_num))(gamma)
 
     # Learn a bias for the noise at this level
     noise = Conv2D(filters=filters,
@@ -208,81 +209,11 @@ def style_block(filters, input_tensor, style_tensor, noise_image, block_num):
 
     return x
 
-
 def BilinearDownSample(name):
     return AveragePooling2D(name=name)
 
 def BilinearUpSample(name):
-    return Lambda(K.resize_images,
-                      arguments={"height_factor": 2,
-                                 "width_factor": 2,
-                                 "data_format": "channels_last",
-                                 "interpolation": "bilinear"
-                                }, name=name)
-
-# class BilinearUpSample(Lambda):
-#     """
-#     Bilinear UpSamplling Layer.
-#
-#     Input:
-#         name - the name of the layer
-#         **kwargs - keyword arguments
-#     """
-#     def __init__(self, name='bilinear_upsample', **kwargs):
-#         # Function
-#         func = (Lambda(K.resize_images,
-#                       arguments={"height_factor": 2,
-#                                  "width_factor": 2,
-#                                  "data_format": "channels_last",
-#                                  "interpolation": "bilinear"
-#                                 }))
-#         super(BilinearUpSample, self).__init__(func, name=name)
-#
-#     def get_config(self):
-#         """Return the config of the layer."""
-#         config = super(BilinearUpSample, self).get_config()
-#         return config
-#
-#     @classmethod
-#     def from_config(cls, config, custom_objects=None):
-#         """Create a layer from its config."""
-#         return cls(**config, custom_objects={'bilinear_upsample': BilinearUpSample})
-#
-#     def __repr__(self):
-#         return f"<Keras CustomLayer - BiLinearUpSample - {self.name}>"
-#
-#
-# class BilinearDownSample(Lambda):
-#     """
-#     Bilinear DownSamplling Layer.
-#
-#     Input:
-#         name - the name of the layer
-#         **kwargs - keyword arguments
-#     """
-#     def __init__(self, name='bilinear_downsample', **kwargs):
-#         # Function
-#         func = (Lambda(K.resize_images,
-#                       arguments={"height_factor": 0.5,
-#                                  "width_factor": 0.5,
-#                                  "data_format": "channels_last",
-#                                  "interpolation": "bilinear"
-#                                 }))
-#         super(BilinearDownSample, self).__init__(func, name=name)
-#
-#     def get_config(self):
-#         """Return the config of the layer."""
-#         config = super(BilinearDownSample, self).get_config()
-#         return config
-#
-#     @classmethod
-#     def from_config(cls, config, custom_objects=None):
-#         """Create a layer from its config."""
-#         return cls(**config, custom_objects={'bilinear_downsample': BilinearDownSample})
-#
-#     def __repr__(self):
-#         return f"<Keras CustomLayer - BiLinearDownSample - {self.name}>"
-#
+    return UpSampling2D(name=name, interpolation="bilinear")
 
 class AdaInstanceNormalization(Layer):
     """

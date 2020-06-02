@@ -5,8 +5,14 @@ An Introspective Variational Autoencoder module.
 Author: Simon Thomas
 Date: 22-May-2020
 
+Issues:
+    The tRGB() at the 4x4 block is called right after
+    the base level and so adds nothing, being modulated
+
+
 """
 from introvae.layers import *
+#from layers import *
 from keras.models import Model
 import tensorflow as tf
 
@@ -73,8 +79,9 @@ def build_style_generator(img_dim, z_dim, filters, base_dim, n_mapping_layers):
     rgbs = []
     for i in range(n_layers):
         rgb = tRGB(x, block=i)
-        x = style_block(filters[::-1][i], x, w, noise_images[i], i)
         rgbs.append(rgb)
+        x = style_block(filters[::-1][i], x, w, noise_images[i], i)
+
 
     # Get final RGB and then sum
     rgb = tRGB(x, block="final")
@@ -83,7 +90,7 @@ def build_style_generator(img_dim, z_dim, filters, base_dim, n_mapping_layers):
     # Sum the RGBs
     img = rgbs[0]
     SUM = Add(name="Sum")
-    BUS =BilinearUpSample(name=f"bilinear_upsample")
+    BUS = UpSampling2D(name="bilinear_upsample", interpolation="bilinear") # BilinearUpSample(name=f"bilinear_upsample")
     for i, rgb in enumerate(rgbs[1::]):
         img = BUS(img)
         img = SUM([img, rgb])
@@ -130,6 +137,33 @@ def build_generator(z_dim, filters, base_dim):
     model = Model(inputs=[generator_input], outputs=[generator_output], name="generator")
 
     return model
+
+def build_rgb_from_generator(generator, n_blocks):
+    """
+    Builds a model to output the summed RGBs from the generator.
+    Used for computing statistics.
+
+    :param generator: the generator model / graph
+    :param n_blocks: the number of blocks in the network
+    :return: rgb_statistics_model
+    """
+    rgb_in = generator.get_layer("generator_input").input
+    constant_in = generator.get_layer("constant_input").input
+    noise_in = generator.get_layer("noise_image").input
+
+    rgb_outputs = []
+    for i in range(n_blocks):
+        rgb = generator.get_layer(f"block_{i}_tRGB").output
+        rgb_outputs.append(rgb)
+
+    # Final
+    rgb = generator.get_layer("block_final_tRGB").output
+    rgb_outputs.append(rgb)
+
+    rgb_model = Model(inputs=[rgb_in, noise_in, constant_in],
+                      outputs=rgb_outputs)
+    return rgb_model
+
 
 
 # --------- TEST ---------- #

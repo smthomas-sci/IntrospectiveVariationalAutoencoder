@@ -51,7 +51,7 @@ class DataGen:
         files = self.files[self._get_indices(i)]
         for file in files:
             img = io.imread(file) / 255.
-            if img.shape[0] != self.img_dim:
+            if img.shape[0] != self.img_dim or img.shape[1] != self.img_dim:
                 img = resize(img, (self.img_dim, self.img_dim))
 
             if self.sigma:
